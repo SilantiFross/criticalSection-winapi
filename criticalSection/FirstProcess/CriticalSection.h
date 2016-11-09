@@ -9,8 +9,9 @@ public:
 	void writeInSharedMemory(int);
 	void readFromSharedMemory();
 private:
+	void projectionFileInSharedMemory();
 	HANDLE _mutex;
 	HANDLE _hMap;
-	int i;
+	LPCTSTR _pBuf;
 	const int BUF_SIZE = 5;
 };
