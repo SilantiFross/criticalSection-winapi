@@ -10,6 +10,12 @@ using namespace std;
 #define BUF_SIZE 2048
 TCHAR szName[] = TEXT("MyFileMappingObject");
 
+void printLastError()
+{
+	_tprintf(TEXT("Received error %d"), GetLastError());
+	_getch();
+}
+
 int _tmain()
 {
 	HANDLE hMapFile;
@@ -19,7 +25,7 @@ int _tmain()
 
 	if (hMapFile == NULL)
 	{
-		_tprintf(TEXT("Could not open file mapping object (%d).\n"), GetLastError());
+		printLastError();
 		return 1;
 	}
 
@@ -27,7 +33,7 @@ int _tmain()
 
 	if (pBuf == NULL)
 	{
-		_tprintf(TEXT("Could not map view of file (%d).\n"), GetLastError());
+		printLastError();
 		CloseHandle(hMapFile);
 		return 1;
 	}

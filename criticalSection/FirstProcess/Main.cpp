@@ -10,6 +10,12 @@ using namespace std;
 TCHAR szName[] = TEXT("MyFileMappingObject");
 TCHAR szMsg[] = TEXT("Test message");
 
+void printLastError()
+{
+	_tprintf(TEXT("Received error %d"), GetLastError());
+	_getch();
+}
+
 int _tmain()
 {
 	HANDLE hMapFile;
@@ -23,14 +29,15 @@ int _tmain()
 
 	if (hMapFile == NULL)
 	{
-		_tprintf(TEXT("Could not create file mapping object (%d).\n"), GetLastError());
+		printLastError();
 		return 1;
 	}
+
 	pBuf = (LPTSTR)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, BUF_SIZE);
 
 	if (pBuf == NULL)
 	{
-		_tprintf(TEXT("Could not map view of file (%d).\n"), GetLastError());
+		printLastError();
 		CloseHandle(hMapFile);
 		return 1;
 	}
