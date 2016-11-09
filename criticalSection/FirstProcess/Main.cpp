@@ -1,54 +1,47 @@
+﻿#include <iostream>
 #include <windows.h>
-#include <stdio.h>
 #include <conio.h>
+#include <stdio.h>
 #include <tchar.h>
-#include <iostream>
+#include"CriticalSection.h"
 
 using namespace std;
 
-#define BUF_SIZE 2048
-TCHAR szName[] = TEXT("MyFileMappingObject");
-TCHAR szMsg[] = TEXT("Test message");
-
-void printLastError()
+int _tmain(int argc, _TCHAR* argv[])
 {
-	_tprintf(TEXT("Received error %d"), GetLastError());
-	_getch();
-}
+	CriticalSection criticalSection;
 
-int _tmain()
-{
-	HANDLE hMapFile;
-	HANDLE hTextFile;
-	TCHAR fileName[20] = TEXT(".\\file.cr");
-	LPCTSTR pBuf;
-
-	hTextFile = CreateFile(fileName, GENERIC_ALL, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-	hMapFile = CreateFileMapping(hTextFile, NULL, PAGE_READWRITE, 0, BUF_SIZE, szName);
-
-	if (hMapFile == NULL)
+	if (argc == 1)
 	{
-		printLastError();
-		return 1;
+		STARTUPINFO si = { sizeof(si) };
+		PROCESS_INFORMATION pi;
+		TCHAR zb[] = TEXT("second process");
+		BOOL b;
+		b = CreateProcess(TEXT("FirstProcess.exe"), zb, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
+		if (!b)
+		{
+			cout << "Cannot create process" << endl << GetLastError() << endl;
+			_getch();
+			return 0;
+		}
+
+		for (int i = 0; i < 100; i++)
+		{
+			criticalSection.writeInSharedMemory();
+			Sleep(1000);
+		}
+		WaitForSingleObject(pi.hProcess, INFINITE);
+		CloseHandle(pi.hProcess);
 	}
-
-	pBuf = (LPTSTR)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, BUF_SIZE);
-
-	if (pBuf == NULL)
+	else
 	{
-		printLastError();
-		CloseHandle(hMapFile);
-		return 1;
+		for (int i = 0; i < 100; i++)
+		{
+			Sleep(900);
+			criticalSection.readFromSharedMemory();
+		}
+		_getch();
 	}
-
-	CopyMemory((PVOID)pBuf, szMsg, (_tcslen(szMsg) * sizeof(TCHAR)));
-	_getch();
-
-	UnmapViewOfFile(pBuf);
-
-	CloseHandle(hTextFile);
-	CloseHandle(hMapFile);
-
 	return 0;
 }
+
