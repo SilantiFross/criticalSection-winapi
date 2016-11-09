@@ -6,7 +6,7 @@ class CriticalSection
 {
 public:
 	CriticalSection();
-	void writeInSharedMemory();
+	void writeInSharedMemory(int);
 	void readFromSharedMemory();
 private:
 	HANDLE _mutex;

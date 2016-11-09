@@ -9,16 +9,15 @@ CriticalSection::CriticalSection()
 	HANDLE mutex = CreateMutex(NULL, FALSE, TEXT("Mutex"));
 }
 
-void CriticalSection::writeInSharedMemory()
+void CriticalSection::writeInSharedMemory(int writeNumber)
 {
 	LPCTSTR pBuf;
 	TCHAR szMsg[5];
 	WaitForSingleObject(_mutex, INFINITE);
-	wsprintf(szMsg, L"%d", i);
+	wsprintf(szMsg, L"%d", writeNumber);
 	pBuf = (LPTSTR)MapViewOfFile(_hMap, FILE_MAP_ALL_ACCESS, 0, 0, BUF_SIZE);
 	CopyMemory((PVOID)pBuf, szMsg, (5 * sizeof(TCHAR)));
-	wcout << L"First process write: " << i << endl;
-	i++;
+	wcout << L"First process write: " << writeNumber << endl;
 	ReleaseMutex(_mutex);
 }
 
@@ -29,4 +28,4 @@ void CriticalSection::readFromSharedMemory()
 	pBuf = (LPTSTR)MapViewOfFile(_hMap, FILE_MAP_ALL_ACCESS, 0, 0, BUF_SIZE);
 	wcout << L"Second process read: " << pBuf << endl;
 	ReleaseMutex(_mutex);
-	}
+}

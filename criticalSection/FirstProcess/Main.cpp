@@ -16,9 +16,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		STARTUPINFO si = { sizeof(si) };
 		PROCESS_INFORMATION pi;
 		TCHAR zb[] = TEXT("second process");
-		BOOL b;
-		b = CreateProcess(TEXT("FirstProcess.exe"), zb, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
-		if (!b)
+		BOOL isProcessCreated;
+		isProcessCreated = CreateProcess(TEXT("FirstProcess.exe"), zb, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
+		if (!isProcessCreated)
 		{
 			cout << "Cannot create process" << endl << GetLastError() << endl;
 			_getch();
@@ -27,7 +27,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		for (int i = 0; i < 100; i++)
 		{
-			criticalSection.writeInSharedMemory();
+			criticalSection.writeInSharedMemory(i);
 			Sleep(1000);
 		}
 		WaitForSingleObject(pi.hProcess, INFINITE);
