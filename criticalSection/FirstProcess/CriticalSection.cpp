@@ -10,9 +10,8 @@ CriticalSection::CriticalSection()
 
 void CriticalSection::writeInSharedMemory(int writeNumber)
 {
-	
-	TCHAR szMsg[5];
 	WaitForSingleObject(_mutex, INFINITE);
+	TCHAR szMsg[5];
 	wsprintf(szMsg, L"%d", writeNumber);
 	projectionFileInSharedMemory();
 	CopyMemory((PVOID)_pBuf, szMsg, (5 * sizeof(TCHAR)));

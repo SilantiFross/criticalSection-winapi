@@ -22,29 +22,26 @@ int _tmain(int argc, _TCHAR* argv[])
 		STARTUPINFO si = { sizeof(si) };
 		PROCESS_INFORMATION pi;
 		TCHAR zb[] = TEXT("second process");
-		BOOL isProcessCreated;
 
-		isProcessCreated = CreateProcess(TEXT("FirstProcess.exe"), zb, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
-
-		if (!isProcessCreated)
+		if (!CreateProcess(TEXT("FirstProcess.exe"), zb, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi))
 		{
 			printLastError();
 			return 0;
 		}
 
-		Sleep(100);
 		for (int i = 0; i < 100; i++)
 		{
 			criticalSection.writeInSharedMemory(i);
 			Sleep(1000);
 		}
+		_getch();
 	}
 	else
 	{
 		for (int i = 0; i < 100; i++)
 		{
-			Sleep(1000);
 			criticalSection.readFromSharedMemory();
+			Sleep(450);
 		}
 		_getch();
 	}
